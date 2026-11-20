@@ -1,36 +1,57 @@
-"""Pixel Village: AI キャラの一日を眺める箱庭ゲーム（ステップ1: 空のプロジェクト）"""
+"""Pixel Village: AI キャラの一日を眺める箱庭ゲーム"""
 
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
+from village import Village
+
 SCREEN_W = 256
 SCREEN_H = 192
 
-
-class Ground(Node):
-    """村の地面。今は芝生の板と、目印の家を1軒置くだけ。"""
-
-    def on_draw(self):
-        # 芝生
-        self.box(Mat4.from_translation(Vec3(0, -2, 0)), Vec3(160, 4, 160), 11)
-        # 家の壁と屋根
-        self.box(Mat4.from_translation(Vec3(0, 12, 0)), Vec3(28, 24, 24), 15)
-        self.box(Mat4.from_translation(Vec3(0, 28, 0)), Vec3(32, 8, 28), 8)
+CAMERA_DISTANCE = 400.0
+CAMERA_PITCH = 35.0  # 見下ろす角度（度）
+AUTO_ROTATE_SPEED = 0.15  # 1フレームで回る角度（度）
+AUTO_ROTATE_DELAY = 90  # 指を離してから自動回転に戻るまでのフレーム数
 
 
 class Scene(Node):
     def __init__(self):
         super().__init__()
         self.shading = Shading(pyxel.colors)
+        self.shading.direction = Vec3(0.5, -1.0, 0.3)
+
         self.camera = Camera()
         self.camera.clear_color = 12
-        self.add_child(Ground())
+        self.camera.ortho_size = 230.0
+        self.camera.near = 1.0
+        self.camera.far = 2000.0
+
+        self.yaw = 30.0
+        self.drag_x = None
+        self.idle = AUTO_ROTATE_DELAY
+
+        self.add_child(Village())
 
     def on_update(self):
-        # カメラを村の周りでゆっくり回す
-        angle = pyxel.frame_count * 0.3
-        eye = Vec3(pyxel.sin(angle) * 160, 110, pyxel.cos(angle) * 160)
-        self.camera.transform = Mat4.look_at(eye, Vec3(0, 8, 0))
+        # ドラッグ（スマホは指でなぞる）で回す。離してしばらくすると自動で回る。
+        if pyxel.btn(pyxel.MOUSE_BUTTON_LEFT):
+            if self.drag_x is not None:
+                self.yaw -= (pyxel.mouse_x - self.drag_x) * 0.8
+            self.drag_x = pyxel.mouse_x
+            self.idle = 0
+        else:
+            self.drag_x = None
+            self.idle += 1
+            if self.idle >= AUTO_ROTATE_DELAY:
+                self.yaw += AUTO_ROTATE_SPEED
+
+        horizontal = CAMERA_DISTANCE * pyxel.cos(CAMERA_PITCH)
+        eye = Vec3(
+            pyxel.sin(self.yaw) * horizontal,
+            CAMERA_DISTANCE * pyxel.sin(CAMERA_PITCH),
+            pyxel.cos(self.yaw) * horizontal,
+        )
+        self.camera.transform = Mat4.look_at(eye, Vec3.ZERO)
 
 
 class App:
