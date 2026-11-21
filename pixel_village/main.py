@@ -3,6 +3,7 @@
 import pyxel
 from pyxel.cube import Camera, Mat4, Node, Shading, Vec3
 
+from fps import FpsCounter
 from village import Village
 
 SCREEN_W = 256
@@ -58,6 +59,7 @@ class App:
     def __init__(self):
         pyxel.init(SCREEN_W, SCREEN_H, title="Pixel Village", fps=30)
         self.scene = Scene()
+        self.fps = FpsCounter()
         pyxel.run(self.update, self.draw)
 
     def update(self):
@@ -66,6 +68,7 @@ class App:
     def draw(self):
         self.scene.draw(0, 0, pyxel.width, pyxel.height)
         pyxel.text(4, 4, "PIXEL VILLAGE", 7)
+        self.fps.draw(4, 12)
 
 
 App()

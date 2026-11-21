@@ -32,6 +32,14 @@ jobs:
           pyxel app2html pixel_village.pyxapp
           mv pixel_village.html index.html
           rm pixel_village.pyxapp
+      - name: スプライトスタッキング版の試作を書き出す
+        run: |
+          mkdir -p _site/stacking
+          cd _site/stacking
+          pyxel package ../../pixel_village ../../pixel_village/stacking.py
+          pyxel app2html pixel_village.pyxapp
+          mv pixel_village.html index.html
+          rm pixel_village.pyxapp
       - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         with:
