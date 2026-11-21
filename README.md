@@ -6,6 +6,14 @@
 
 GitHub Pages で公開しています: https://ractodaisuki.github.io/pixel-village/
 
+## 操作
+
+- 「＋」「−」ボタン（マウスホイールでも）: 拡大・縮小
+- ドラッグ: 1倍のときは回転、拡大中は見る場所を動かす
+- 「＜」「＞」ボタン: 押している間、回転
+
+スプライトスタッキング版の試作: https://ractodaisuki.github.io/pixel-village/stacking/
+
 ## 手元で動かす
 
 ```sh
